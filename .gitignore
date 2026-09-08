@@ -1,0 +1,13 @@
+# IDE
+.idea/
+*.iml
+*.iws
+
+# 编译产物
+out/
+target/
+*.class
+
+# 系统
+.DS_Store
+Thumbs.db
