@@ -11,7 +11,7 @@ package Algorithm;
  * 易错点：题目要求"不能重复使用同一个元素"，用 j=i+1 保证两数不取同一个；
  *         经典坑：[3,2,4] target=6 答案是 [1,2]，不是 [0,0]（3+3 违反规则）。
  */
-public class TwoSum {
+public class LC1_TwoSum {
 
     public static int[] twoSum(int[] nums, int target) {
         int[] ans = new int[2];

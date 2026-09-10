@@ -11,7 +11,7 @@ package Algorithm;
  * 易错点：① 全 9（999+1=1000）位数增加，必须 new 长度+1 的数组，首位写 1；
  *         ② 普通情况（如 129+1=130）只在低位变化，高位原样保留，别整体重算。
  */
-public class PlusOne {
+public class LC66_PlusOne {
 
     public static int[] plusOne(int[] digits) {
         // 从最低位往高位模拟进位
