@@ -1,5 +1,8 @@
 package DataStructure;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 /**
  * 🐳 默写题单：线索二叉树（中序线索化）+ 线索树遍历
  * 日期：2026-09-19 · 复习期第2周 · 救火日 ·（补 9/17 顺延项 · 轻量档）
@@ -29,5 +32,80 @@ package DataStructure;
 
 // TODO 2026-09-19：主人默写区 —— 从空类开始写，写完对照自测期望验证
 public class ThreadedBinaryTree {
+    public static class ThreadedNode{
+        int value;
+        ThreadedNode left;
+        ThreadedNode right;
+        boolean leftThread;
+        boolean rightThread;
+        public ThreadedNode(int value) {
+            this.value = value;
+            this.leftThread = false;
+            this.rightThread = false;
+            this.left = null;
+            this.right = null;
+        }
+    }
+    static ThreadedNode root;
+    static ThreadedNode pre;
+    public void build(int[] level) {
+        root = buildNode(level, 0);
+    }
+
+    private ThreadedNode buildNode(int[] level, int i) {
+        if (i >= level.length || level[i] == -1) {
+            return null;
+        }
+        ThreadedNode node = new ThreadedNode(level[i]);
+        node.left = buildNode(level, 2 * i + 1);    // 左孩子在 2i+1
+        node.right = buildNode(level, 2 * i + 2);   // 右孩子在 2i+2
+        return node;
+    }
+    public static void threadNode()  {
+        pre =null;
+        doThread(root);
+    }
+    public static void doThread(ThreadedNode node) {
+        if (node == null) {
+            return;
+        }
+        doThread(node.left);
+        if(node.left==null){
+            node.left = pre;
+            node.leftThread = true;
+        }
+        if(pre!=null &&pre.right==null){
+           pre.right = node;
+           pre.rightThread = true;
+        }
+        pre = node;
+        doThread(node.right);
+    }
+    public static void inOrderThread() {
+        ThreadedNode node = root;
+        while (node!= null && !node.leftThread) {
+            node = node.left;
+        }
+        while(node!=null){
+            System.out.println(node.value+" ");
+            if(node.rightThread){
+                node = node.right;
+            }else {
+                node=node.right;
+                while(node!=null &&!node.leftThread){
+                    node = node.left;
+                }
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        ThreadedBinaryTree tree = new ThreadedBinaryTree();
+        tree.build(new int[]{4,2,6,1,3,5,7});
+        tree.threadNode();
+        tree.inOrderThread();
+
+
+    }
 
 }
