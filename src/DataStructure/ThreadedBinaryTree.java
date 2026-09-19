@@ -98,13 +98,30 @@ public class ThreadedBinaryTree {
             }
         }
     }
+    public void printThreads(ThreadedNode node) {
+        if (node == null) {
+            return;
+        }
+        if (!node.leftThread) {
+            printThreads(node.left);
+        }
+        System.out.println("  " + node.value
+                + "  |  left " + (node.leftThread ? "线索 → " + valOf(node.left) : "孩子 → " + valOf(node.left))
+                + "  |  right " + (node.rightThread ? "线索 → " + valOf(node.right) : "孩子 → " + valOf(node.right)));
+        if (!node.rightThread) {
+            printThreads(node.right);
+        }
+    }
+    static String valOf(ThreadedNode n) {
+        return n == null ? "null" : String.valueOf(n.value);
+    }
 
     public static void main(String[] args) {
         ThreadedBinaryTree tree = new ThreadedBinaryTree();
         tree.build(new int[]{4,2,6,1,3,5,7});
         tree.threadNode();
         tree.inOrderThread();
-
+        tree.printThreads(tree.root);
 
     }
 
