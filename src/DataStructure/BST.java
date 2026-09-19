@@ -24,44 +24,93 @@ package DataStructure;
 
 // TODO 2026-09-11：主人默写区 —— 从空类开始写，写完对照自测期望验证
 public  class BST {
-    public static class Node{
+    public static class Node {
         int value;
         Node left, right;
-        public Node(int value){
+
+        public Node(int value) {
             this.value = value;
             left = right = null;
         }
     }
+
     static Node root;
+
     public BST(Node root) {
         this.root = root;
     }
+
     public static void insert(int value) {
-        if (root== null) {
+        if (root == null) {
             root = new Node(value);
             return;
         }
-        Node n=root;
-        while (n!=null) {
-            if (value<n.value) {
-                if (n.left==null) {
+        Node n = root;
+        while (n != null) {
+            if (value < n.value) {
+                if (n.left == null) {
                     n.left = new Node(value);
                     return;
-                }else {
+                } else {
                     n = n.left;
                 }
-            }else if(value>n.value){
-                if (n.right==null) {
+            } else if (value > n.value) {
+                if (n.right == null) {
                     n.right = new Node(value);
                     return;
-                }else
+                } else
                     n = n.right;
-                }
-            else{
+            } else {
                 System.out.println("已经存在");
                 return;
             }
         }
+    }
+    public static boolean delete(int value) {
+        if (!search(value)) return false;    // 只在最外层检查一次
+        root = delect(root, value);
+        return true;
+    }
+    public static Node delect(Node n, int value) {
+
+        if (n == null) return null;
+        if (n.value < value) {
+            n.right = delect(n.right, value);
+        } else if (n.value > value) {
+            n.left = delect(n.left, value);
+        } else {
+            if (n.left == null) {
+                return n.right;
+            } else if (n.right == null) {
+                return n.left;
+            }
+            Node ans=min(n.right);
+            n.value=ans.value;
+            n.right = delect(n.right, ans.value);
+        }
+        return n;
+    }
+    public static Node min(Node n) {
+        while (n.left != null) {
+            n = n.left;
+        }
+        return n;
+    }
+    public static boolean search(int value) {
+        Node n=root;
+        while (n != null) {
+            if (n.value == value) {
+
+                return true;
+            } else if (n.value > value) {
+                n = n.left;
+            }
+            else if (n.value < value) {
+                n = n.right;
+            }
+        }
+
+        return false;
     }
     public static void search(int value, Node n) {
         while (n != null) {
