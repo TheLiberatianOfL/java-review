@@ -27,5 +27,58 @@ package Algorithm;
 
 // TODO 2026-09-19：主人默写区 —— 从空类开始写，写完对照自测期望验证
 public class QuickSort {
+    public static int partition(int[] arr, int left, int right) {
+        int pivot = arr[left];// 取最左当基准：实现最简、不需额外空间
+        int i = left, j = right;
+        while (i < j) {
+            while (i < j && arr[j] >= pivot) {
+                j--;
+            }
+            arr[i] = arr[j];
+            while (i < j && arr[i] <= pivot) {
+                i++;
+            }
+            arr[j] = arr[i];
+        }
+        arr[i]=pivot;
+        return i;
+    }
+    public static void quickSort(int[] arr){
+        if(arr==null||arr.length<2){
+            return;
+        }
+        quickSort(arr,0,arr.length-1);
+    }
+    public static void quickSort(int[] arr, int left, int right) {
+        if (left >=right) {
+            return;
+        }
+        int pivot =partition(arr, left, right);
+        quickSort(arr, left, pivot - 1);
+        quickSort(arr, pivot + 1, right);
+    }
+    static void show(int[] a) {
+        for (int i : a) System.out.print(i + " ");
+        System.out.println();
+    }
+    public static void main(String[] args) {
+        QuickSort quickSort = new QuickSort();
+        int[] arr1 = {5,3,8,1,9,2,7};
+        int[] arr2={};
+        int[] arr3={1};
+        int[] arr4={2,2,2,2};
+        int[] arr5={9,8,7,6,5};
+        quickSort(arr1);
+        show(arr1);
+        quickSort(arr2);
+        show(arr2);
+        quickSort(arr3);
+        show(arr3);
+        quickSort(arr4);
+        show(arr4);
+        quickSort(arr5);
+        show(arr5);
+    }
+
 
 }
