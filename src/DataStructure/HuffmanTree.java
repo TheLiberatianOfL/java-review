@@ -115,13 +115,69 @@ public class HuffmanTree {
                 cur = root;
             }
         }
+        // ★ 加固（Agent 补 2026-09-20）：正常编码结束必然落在根，否则说明编码被截断/非法
+        if (cur != root) throw new IllegalArgumentException("编码不完整：结尾没落在叶子");
         return sb.toString();
     }
+    // ⚠️ main 自测由 Agent 代补（2026-09-20 · 主人授权「你帮我弄了吧」）
     public static void main(String[] args) {
-        Node root = buildTree(new char[]{'a','b'}, new int[]{2,3});
+        // ===== ① 题单基准数据 A-F：编码表 + WPL =====
+        char[] cs = {'A','B','C','D','E','F'};
+        int[]  ws = {5, 9, 12, 13, 16, 45};
+
+        Node root = buildTree(cs, ws);
+        System.out.println("root.weight = " + root.weight + "（期望 100）");
+
         String[] codes = new String[128];
         generateCodes(root, "", codes);
-        System.out.println("a -> " + codes['a']);   // 应该打印 a -> 0
-        System.out.println("b -> " + codes['b']);   // 应该打印 b -> 1
+
+        int wpl = 0;
+        for (int i = 0; i < cs.length; i++) {
+            char c = cs[i];
+            System.out.println("  " + c + " -> " + codes[c] + "（码长 " + codes[c].length() + "）");
+            wpl += ws[i] * codes[c].length();
+        }
+        System.out.println("WPL = " + wpl + "（期望 224）");
+
+        // ===== ② 前缀码自检：任何一条编码都不是另一条的前缀 =====
+        boolean prefixFree = true;
+        for (int i = 0; i < cs.length; i++)
+            for (int j = 0; j < cs.length; j++)
+                if (i != j && codes[cs[j]].startsWith(codes[cs[i]])) prefixFree = false;
+        System.out.println("前缀码自检 = " + prefixFree + "（期望 true）");
+
+        // ===== ③ 单字符文本不崩 =====
+        Node single = buildTree(new char[]{'a'}, new int[]{7});
+        String[] singleCodes = new String[128];
+        generateCodes(single, "", singleCodes);
+        System.out.println("单字符 'a'：编码 " + singleCodes['a']
+                + "，解回 " + decode(singleCodes['a'], single) + "（期望 0 与 a）");
+
+        // ===== ④ "hello world" 编码 → 解码 往返 =====
+        String text = "hello world";
+        int[] freq = new int[128];
+        for (int i = 0; i < text.length(); i++) freq[text.charAt(i)]++;
+        int n = 0;
+        for (int i = 0; i < 128; i++) if (freq[i] > 0) n++;
+        char[] hc = new char[n];
+        int[]  hw = new int[n];
+        int k = 0;
+        for (int i = 0; i < 128; i++) if (freq[i] > 0) { hc[k] = (char) i; hw[k] = freq[i]; k++; }
+
+        Node hRoot = buildTree(hc, hw);
+        String[] hCodes = new String[128];
+        generateCodes(hRoot, "", hCodes);
+        String enc = encode(text, hCodes);
+        String dec = decode(enc, hRoot);
+        System.out.println("编码 = " + enc);
+        System.out.println("解码 = " + dec + "，往返一致 = " + text.equals(dec) + "（期望 true）");
+
+        // ===== ⑤ 加固检查：截断/非法编码应当被拒绝 =====
+        try {
+            decode(enc.substring(0, enc.length() - 1), hRoot);   // 故意砍掉最后一位
+            System.out.println("截断编码：没被抓住 ✗");
+        } catch (IllegalArgumentException e) {
+            System.out.println("截断编码被拒绝 ✓ -> " + e.getMessage());
+        }
     }
 }
