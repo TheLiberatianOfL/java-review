@@ -77,4 +77,51 @@ public class HuffmanTree {
         // ④ return 堆.poll();   // 只剩一个，就是根
         return pq.poll();
     }
+    public static void generateCodes(Node node,String path,String[] codes) {
+        if(node==null){
+            return;
+        }
+        if(node.left==null&&node.right==null){
+            codes[node.ch]=path.isEmpty()?"0":path;
+            return;
+        }
+        generateCodes(node.left,path+"0",codes);
+        generateCodes(node.right,path+"1",codes);
+    }
+    public static String encode(String text, String[] codes) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < text.length(); i++) {
+            char c = text.charAt(i);
+            if (codes[c] == null) throw new IllegalArgumentException("字符不在表里: " + c);
+            sb.append(codes[c]);          // 查表：c 的编码是多少，直接接上去
+        }
+        return sb.toString();
+    }
+
+
+    public static String decode(String code, Node root) {
+
+        StringBuilder sb = new StringBuilder();
+        Node cur = root;
+        if (root.left == null && root.right == null) {
+            for (int i = 0; i < code.length(); i++) sb.append(root.ch);
+            return sb.toString();
+        }
+        for (int i = 0; i < code.length(); i++) {
+            cur = (code.charAt(i) == '0') ? cur.left : cur.right;
+            if (cur == null) throw new IllegalArgumentException("非法编码：走空了");
+            if (cur.left == null && cur.right == null) {
+                sb.append(cur.ch);
+                cur = root;
+            }
+        }
+        return sb.toString();
+    }
+    public static void main(String[] args) {
+        Node root = buildTree(new char[]{'a','b'}, new int[]{2,3});
+        String[] codes = new String[128];
+        generateCodes(root, "", codes);
+        System.out.println("a -> " + codes['a']);   // 应该打印 a -> 0
+        System.out.println("b -> " + codes['b']);   // 应该打印 b -> 1
+    }
 }
